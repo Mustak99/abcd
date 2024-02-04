@@ -1,0 +1,23 @@
+<nav
+  class="navbar navbar-expand-lg bg-body-tertiary"
+  style="background-color: #fff"
+>
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/dashboard">TECHstile</a>
+    <div class="d-flex">
+      <span class="me-2" style="color: #978da8">Welcome, </span>
+      <div class="dropdown">
+        <span class="dropdown-button">
+          {{ loggedInUserName || "Guest" }}
+        </span>
+        <ul class="dropdown-content">
+          <a (click)="logout()" class="dropdown-item">Logout</a>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- <app-machine-form (dataAdded)="onDataAdded($event)"></app-machine-form> -->
+<app-machinecard [machineData]="machineDataArray"></app-machinecard>
+

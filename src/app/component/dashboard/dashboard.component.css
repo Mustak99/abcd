@@ -1,0 +1,38 @@
+.dropdown {
+    color: #978DA8;
+    cursor: pointer;
+    position: relative; /* Add this line to make the dropdown content position relative to the dropdown */
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%; /* Position the dropdown content just below the dropdown */
+    right: 1px;
+    background-color: #fff;
+    min-width: 100px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 8px 10px;
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+}
+
+.dropdown-content a:hover {
+    background-color: #ddd;
+    cursor: pointer;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+    border-radius: 5px;
+    padding: 4px 0px 4px 0px;
+    box-shadow: 0px 3px 4px 1px #888888;
+}

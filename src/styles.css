@@ -1,0 +1,8 @@
+@import '~@fortawesome/fontawesome-free/css/all.css';
+
+body *{
+    font-family: Lato,sans-serif !important;
+}
+body{
+    background: #ebecf0;
+}

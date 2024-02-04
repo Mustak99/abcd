@@ -1,0 +1,9 @@
+{
+  "database": {
+    "rules": "y"
+  },
+  "firestore": {
+    "rules": "y",
+    "indexes": "i"
+  }
+}
