@@ -15,6 +15,7 @@ import { Machinecard } from'./commoncomponent/machine-card';
 import { CommonModule } from '@angular/common';
 import { ManagerFormComponent } from './commoncomponent/addManager';
 import { ManagerloginComponent } from './component/managerlogin/managerlogin.component';
+import { CommonlayoutComponent } from './component/commonlayout/commonlayout.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { ManagerloginComponent } from './component/managerlogin/managerlogin.com
     MachineFormComponent,
     Machinecard,
     ManagerFormComponent,
-    ManagerloginComponent
+    ManagerloginComponent,
+    CommonlayoutComponent
   ],
   imports: [
     CommonModule,

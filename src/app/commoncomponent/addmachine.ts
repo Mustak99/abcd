@@ -242,7 +242,7 @@ export class MachineFormComponent {
     this.initForm();
   }
   ngOnInit() {
-    this.manager_id = localStorage.getItem('manager_id');
+    this.manager_id = sessionStorage.getItem('manager_id');
     this.getMasterId(this.manager_id);
   }
 
@@ -311,7 +311,7 @@ export class MachineFormComponent {
   async addDataToFirestore() {
     if (this.machineForm.valid) {
       const machineData = this.machineForm.value;
-      const userId = localStorage.getItem('manager_id');
+      const userId = sessionStorage.getItem('manager_id');
       if (userId) {
         const firestoreData = {
           data:machineData, 

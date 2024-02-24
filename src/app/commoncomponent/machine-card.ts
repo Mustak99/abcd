@@ -76,7 +76,7 @@ import { Component, Input } from '@angular/core';
               >
                 {{ getMno(item) }}
               </div>
-              <i class="fa fa-external-link text-decoration-none" style="margin:10px 10px 0px 0px;cursor: pointer;" (click)="openPopup(i)">
+              <i class="fa fa-external-link text-decoration-none" style="margin:10px 10px 0px 0px;cursor: pointer;color:green" (click)="openPopup(i)">
               </i>
             </div>
             <div class="card-body">

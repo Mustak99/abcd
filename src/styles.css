@@ -6,3 +6,9 @@ body {
 body{
     background: #ebecf0;
 }
+p{
+    color:#978da8;
+}
+.cursor{
+    cursor: pointer;
+}

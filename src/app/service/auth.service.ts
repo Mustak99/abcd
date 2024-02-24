@@ -54,29 +54,31 @@ export class AuthService {
   async login(email: string, password: string) {
     try {
       const res = await this.afAuth.signInWithEmailAndPassword(email, password);
-      this.router.navigate(['dashboard']);
       this.getCurrentUserId().then((userId) => {
         if (userId) {
           this.firestore
-            .collection('managers')
+          .collection('managers')
             .doc(userId)
             .get()
             .subscribe((managerDoc) => {
               if (managerDoc.exists) {
-                localStorage.setItem('manager_id', userId);
+                sessionStorage.setItem('manager_id', userId);
               }
             });
           this.firestore
-            .collection('users')
-            .doc(userId)
-            .get()
-            .subscribe((users) => {
-              if (users.exists) {
-                localStorage.setItem('user_id', userId);
+          .collection('users')
+          .doc(userId)
+          .get()
+          .subscribe((users) => {
+            if (users.exists) {
+                sessionStorage.setItem('user_id', userId);
               }
             });
-        }
-      });
+          }
+        });
+        setTimeout(() => {
+          this.router.navigate(['dashboard']);
+        }, 2000);
     } catch (err: any) {
       if (err.code) {
         if (err.code == 'auth/user-not-found') {
@@ -124,7 +126,7 @@ export class AuthService {
   async logout(): Promise<void> {
     try {
       await this.afAuth.signOut();
-      console.log('Logout successful');
+      sessionStorage.clear();
       this.router.navigate(['/login']);
     } catch (error) {
       console.error('Logout failed:', error);
