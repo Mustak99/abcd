@@ -4,7 +4,6 @@ import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { ComponentComponent } from './component/component.component';
 import { LoginComponent } from './component/login/login.component';
 import { RegisterComponent } from './component/register/register.component';
 import { FormsModule } from '@angular/forms';
@@ -14,15 +13,19 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MachineFormComponent } from'./commoncomponent/addmachine';
 import { Machinecard } from'./commoncomponent/machine-card';
 import { CommonModule } from '@angular/common';
+import { ManagerFormComponent } from './commoncomponent/addManager';
+import { ManagerloginComponent } from './component/managerlogin/managerlogin.component';
+
 @NgModule({
   declarations: [
     AppComponent,
-    ComponentComponent,
     LoginComponent,
     RegisterComponent,
     DashboardComponent,
     MachineFormComponent,
-    Machinecard
+    Machinecard,
+    ManagerFormComponent,
+    ManagerloginComponent
   ],
   imports: [
     CommonModule,

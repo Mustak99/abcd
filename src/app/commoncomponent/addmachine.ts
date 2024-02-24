@@ -2,6 +2,9 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { AuthService } from 'src/app/service/auth.service';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { DocumentSnapshot } from '@angular/fire/firestore';
+
 @Component({
   selector: 'app-machine-form',
   template: `
@@ -218,7 +221,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
             </div>
           </div>
           <div class="d-flex justify-content-end">
-          <button type="submit" class="btn btn-primary">Add Data</button>
+            <button type="submit" class="btn btn-primary">Add Data</button>
           </div>
         </form>
       </div>
@@ -229,7 +232,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class MachineFormComponent {
   @Output() dataAdded = new EventEmitter<any>();
   machineForm!: FormGroup;
-
+  manager_id: any;
+  master_id!: any;
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -237,6 +241,31 @@ export class MachineFormComponent {
   ) {
     this.initForm();
   }
+  ngOnInit() {
+    this.manager_id = localStorage.getItem('manager_id');
+    this.getMasterId(this.manager_id);
+  }
+
+  async getMasterId(managerId: any) {
+    try {
+      const userDocRef = this.firestore
+        .collection('managers')
+        .doc(managerId)
+        .snapshotChanges();
+      userDocRef.subscribe((doc: any) => {
+        if (doc.payload.exists) {
+          const userData = doc.payload.data();
+          const masterId = userData.master_id;
+          this.master_id = masterId;
+        } else {
+          console.error('Manager document does not exist');
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching machine data:', error);
+    }
+  }
+
   initForm() {
     this.machineForm = this.fb.group({
       mNo: ['', Validators.required],
@@ -282,13 +311,16 @@ export class MachineFormComponent {
   async addDataToFirestore() {
     if (this.machineForm.valid) {
       const machineData = this.machineForm.value;
-      const userId = await this.authService.getCurrentUserId();
-
+      const userId = localStorage.getItem('manager_id');
       if (userId) {
-        const userDocRef = this.firestore.collection('users').doc(userId);
-        userDocRef
+        const firestoreData = {
+          data:machineData, 
+          manager_id: userId,
+          master_id: this.master_id
+        };
+        this.firestore
           .collection('machines')
-          .add(machineData)
+          .add(firestoreData)
           .then((response) => {
             console.log('Data added successfully:', response);
             this.dataAdded.emit();
@@ -299,6 +331,4 @@ export class MachineFormComponent {
       }
     }
   }
-
-  
 }

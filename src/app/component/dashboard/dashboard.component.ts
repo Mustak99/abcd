@@ -1,12 +1,7 @@
 import { Component } from '@angular/core';
 import { AuthService } from 'src/app/service/auth.service';
 import { DataretriveService } from 'src/app/service/dataretrive.service';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { QueryDocumentSnapshot } from '@angular/fire/firestore';
-import { map } from 'rxjs/operators';
-
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -18,10 +13,9 @@ export class DashboardComponent {
   data$!: Observable<any>;
   userId: any;
   machineDataArray: any[] = [];
+  abc: any;
   constructor(
     private authService: AuthService,
-    private firestore: AngularFirestore,
-    private fb: FormBuilder,
     private dataRetrive: DataretriveService
   ) {}
 
@@ -29,12 +23,10 @@ export class DashboardComponent {
     this.authService.getLoggedInUserName().subscribe((userName) => {
       this.loggedInUserName = userName;
     });
-    this.authService.getCurrentUserId().then((userId) => {
-      this.userId = userId;
-    });
-    this.dataRetrive.fetchMachineData().then(()=>{
+    this.userId=localStorage.getItem('user_id')
+    this.dataRetrive.fetchMachineData().then(() => {
       this.machineDataArray = this.dataRetrive.machineDataArray;
-    })
+    });
   }
 
   onDataAdded(event: any) {

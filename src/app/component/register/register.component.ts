@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/service/auth.service';
@@ -9,21 +11,19 @@ import { AuthService } from 'src/app/service/auth.service';
   styleUrls: ['./register.component.css'],
 })
 export class RegisterComponent {
-  username = '';
-  email = '';
-  password = '';
+  email: string = '';
+  password: string = '';
+  username: string = '';
 
-  constructor(private authService: AuthService, private router: Router) {}
 
-  async onSubmit() {
-    try {
-      await this.authService.register(this.email, this.password, this.username);
+  constructor(
+    private afAuth: AngularFireAuth,
+    private firestore: AngularFirestore,
+    private Auth: AuthService
+  ) {}
 
-      // Redirect to a success page or navigate to another route
-      this.router.navigate(['/login']);
-    } catch (error) {
-      // Handle error appropriately (show a message, etc.)
-      console.error('Error during registration:', error);
-    }
+  submit() {
+    this.Auth.register(this.email, this.password, this.username)
   }
+  
 }

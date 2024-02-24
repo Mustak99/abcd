@@ -2,11 +2,21 @@ import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Observable, map } from 'rxjs';
 import { Router } from '@angular/router';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
+import {
+  getFirestore,
+  doc,
+  setDoc,
+} from 'firebase/firestore';
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private afAuth: AngularFireAuth, private router: Router) {}
+  constructor(
+    private afAuth: AngularFireAuth,
+    private router: Router,
+    private firestore: AngularFirestore
+  ) {}
 
   async register(
     email: string,
@@ -19,28 +29,65 @@ export class AuthService {
         password
       );
 
+      // Update user profile display name if user exists
       await result.user?.updateProfile({
         displayName: username,
+      });
+
+      // Add user details to Firestore if user exists
+      const db: any = getFirestore();
+      const userDocRef = doc(db, 'users', result.user?.uid || '');
+
+      await setDoc(userDocRef, {
+        email: email,
+        password: password,
+        username: username,
       });
 
       alert('Registration successful:');
     } catch (error) {
       alert('Registration failed: ' + error);
-      throw error; 
+      throw error;
     }
   }
+
   async login(email: string, password: string) {
     try {
       const res = await this.afAuth.signInWithEmailAndPassword(email, password);
       this.router.navigate(['dashboard']);
+      this.getCurrentUserId().then((userId) => {
+        if (userId) {
+          this.firestore
+            .collection('managers')
+            .doc(userId)
+            .get()
+            .subscribe((managerDoc) => {
+              if (managerDoc.exists) {
+                localStorage.setItem('manager_id', userId);
+              }
+            });
+          this.firestore
+            .collection('users')
+            .doc(userId)
+            .get()
+            .subscribe((users) => {
+              if (users.exists) {
+                localStorage.setItem('user_id', userId);
+              }
+            });
+        }
+      });
     } catch (err: any) {
-      if (
-        err.code === 'auth/user-not-found' ||
-        err.code === 'auth/wrong-password'
-      ) {
-        alert('Invalid email or password');
+      if (err.code) {
+        if (err.code == 'auth/user-not-found') {
+          alert('Invalid email');
+        } else if (err.code == 'auth/wrong-password') {
+          alert('Invalid password');
+        } else {
+          alert(err.message);
+        }
       } else {
-        alert(err.message);
+        alert('Invalid email or Password');
       }
     }
   }
