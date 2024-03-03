@@ -3,6 +3,7 @@ import { Component, Input } from '@angular/core';
 @Component({
   selector: 'app-machinecard',
   template: `
+  <div class="p-2">
     <div *ngIf="machineData">
       <div class="d-flex justify-content-between mt-5">
         <div style="display: flex;gap: 22.684px;">
@@ -51,7 +52,7 @@ import { Component, Input } from '@angular/core';
           </div>
         </div>
       </div>
-      <div class="row" style="margin-top:35px;margin-bottom:30px;">
+      <div class="row" style="margin-top:35px;margin-bottom:30px;margin-right:0;">
         <div
           class=" col-sm-3 col-md-4 col-lg-2"
           style="margin-bottom: 35px;"
@@ -168,6 +169,7 @@ import { Component, Input } from '@angular/core';
         </div>
       </div>
     </div>
+  </div>
   `,
   styles: [
     `

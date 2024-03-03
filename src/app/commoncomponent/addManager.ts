@@ -10,75 +10,104 @@ import { AuthService } from 'src/app/service/auth.service';
       <p
         class="mb-0 pr-1 cursor"
         (click)="onof(true)"
-        [ngStyle]="{ 'color': toggle ? 'black' : '#978da8' }"
+        [ngStyle]="{ color: toggle ? 'black' : '#978da8' }"
       >
         Add Manager
       </p>
-      <p class="pl-1 mb-0 cursor" (click)="onof(false)"
-      [ngStyle]="{ 'color': !toggle ? 'black' : '#978da8' }"
-      >View Managers</p>
-    </div>
-    <div class="container-fluid" *ngIf="toggle">
-      <form
-        [formGroup]="managerForm"
-        (ngSubmit)="enrollManager()"
-        class="needs-validation"
-        novalidate
+      <p
+        class="pl-1 mb-0 cursor"
+        (click)="onof(false); fetchManager(masterId)"
+        [ngStyle]="{ color: !toggle ? 'black' : '#978da8' }"
       >
-        <div class="form-group">
-          <label for="managerName">Manager Name:</label>
-          <input
-            type="text"
-            id="managerName"
-            formControlName="managerName"
-            class="form-control"
-            required
-          />
-          <div class="invalid-feedback">Manager Name is required.</div>
-        </div>
+        View Managers
+      </p>
+    </div>
+    <div class="container-fluid mt-3 " *ngIf="toggle">
+      <div class="card p-3 w-50 m-auto">
+        <form
+          [formGroup]="managerForm"
+          (ngSubmit)="enrollManager()"
+          class="needs-validation"
+          novalidate
+        >
+          <div class="form-group">
+            <label for="managerName">Manager Name:</label>
+            <input
+              type="text"
+              id="managerName"
+              formControlName="managerName"
+              class="form-control"
+              required
+            />
+            <div class="invalid-feedback">Manager Name is required.</div>
+          </div>
 
-        <div class="form-group">
-          <label for="managerEmail">Manager Email:</label>
-          <input
-            type="email"
-            id="managerEmail"
-            formControlName="managerEmail"
-            class="form-control"
-            required
-          />
-          <div class="invalid-feedback">
-            Please enter a valid email address.
+          <div class="form-group">
+            <label for="managerEmail">Manager Email:</label>
+            <input
+              type="email"
+              id="managerEmail"
+              formControlName="managerEmail"
+              class="form-control"
+              required
+            />
+            <div class="invalid-feedback">
+              Please enter a valid email address.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="managerPassword">Password:</label>
+            <input
+              type="password"
+              id="managerPassword"
+              formControlName="managerPassword"
+              class="form-control"
+              required
+            />
+            <div class="invalid-feedback">Password is required.</div>
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="managerForm.invalid"
+          >
+            Enroll Manager
+          </button>
+        </form>
+      </div>
+    </div>
+    <div class="container-fluid mx-auto mt-3" *ngIf="!toggle">
+  <div class="card p-2">
+    <h2 class="mb-4">Manager Information</h2>
+    <div class="row">
+      <div class="col-md-4" *ngFor="let manager of managerData">
+        <div class="card manager-card">
+          <div class="card-body">
+            <h5 class="card-title" style="border-bottom:solid 1px">{{ manager.name }}</h5>
+            <p class="card-text">Email: {{ manager.email }}</p>
           </div>
         </div>
-
-        <div class="form-group">
-          <label for="managerPassword">Password:</label>
-          <input
-            type="password"
-            id="managerPassword"
-            formControlName="managerPassword"
-            class="form-control"
-            required
-          />
-          <div class="invalid-feedback">Password is required.</div>
-        </div>
-
-        <button
-          type="submit"
-          class="btn btn-primary"
-          [disabled]="managerForm.invalid"
-        >
-          Enroll Manager
-        </button>
-      </form>
+      </div>
     </div>
+  </div>
+</div>
+
   `,
-  styles: [``],
+  styles: [
+    `
+      .manager-card {
+        margin-bottom: 20px;
+      }
+    `,
+  ],
 })
 export class ManagerFormComponent {
   managerForm: FormGroup;
   masterId: any;
   toggle = true;
+  managerData: any;
   constructor(
     private firestore: AngularFirestore,
     private auth: AngularFireAuth,
@@ -94,6 +123,7 @@ export class ManagerFormComponent {
 
   ngOnInit() {
     this.masterId = sessionStorage.getItem('user_id');
+    this.fetchManager(this.masterId);
   }
 
   onof(parametr: boolean) {
@@ -124,7 +154,8 @@ export class ManagerFormComponent {
                 .collection('managers')
                 .doc(user.uid)
                 .set(managerData);
-              console.log('Manager enrolled with ID: ', user.uid);
+                this.managerForm.reset();
+                alert('Data added successfully')
             } catch (error) {
               console.error('Error enrolling manager: ', error);
             }
@@ -137,4 +168,25 @@ export class ManagerFormComponent {
         });
     }
   }
+
+  async fetchManager(masterId: string) {
+    try {
+      const snapshot = await this.firestore
+        .collection('managers', (ref) => ref.where('master_id', '==', masterId))
+        .get()
+        .toPromise();
+        
+      if (snapshot && !snapshot.empty) { // Check if snapshot exists and is not empty
+        const data = snapshot.docs.map((doc: any) => doc.data());
+        this.managerData = data;
+        console.log(this.managerData);
+      } else {
+        this.managerData = [];
+      }
+    } catch (error) {
+      console.error('Error fetching managers:', error);
+      this.managerData = [];
+    }
+  }
+  
 }

@@ -10,7 +10,7 @@ import { DocumentSnapshot } from '@angular/fire/firestore';
   template: `
     <div class="card" style="width: 70%;margin: auto;margin-top:20px;">
       <div class="card-body">
-        <h1>Add Machine</h1>
+        <h2>Add Machine</h2>
         <form [formGroup]="machineForm" (ngSubmit)="onSubmit()">
           <div class="row">
             <div class="col-md-4">
@@ -314,15 +314,16 @@ export class MachineFormComponent {
       const userId = sessionStorage.getItem('manager_id');
       if (userId) {
         const firestoreData = {
-          data:machineData, 
+          data: machineData,
           manager_id: userId,
-          master_id: this.master_id
+          master_id: this.master_id,
         };
         this.firestore
           .collection('machines')
           .add(firestoreData)
           .then((response) => {
             console.log('Data added successfully:', response);
+            alert('Data added successfully');
             this.dataAdded.emit();
           })
           .catch((error) => {

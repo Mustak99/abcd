@@ -8,6 +8,7 @@ import { MachineFormComponent } from './commoncomponent/addmachine';
 import { ManagerFormComponent } from './commoncomponent/addManager';
 import { ManagerloginComponent } from './component/managerlogin/managerlogin.component';
 import { CommonlayoutComponent } from './component/commonlayout/commonlayout.component';
+import { InvoiceComponent } from './component/invoice/invoice.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -22,6 +23,7 @@ const routes: Routes = [
       { path: 'addmachin', component: MachineFormComponent, canActivate: [AuthGuard] }, // Apply AuthGuard to child routes
       { path: 'manager', component: ManagerFormComponent, canActivate: [AuthGuard] }, // Apply AuthGuard to child routes
       { path: 'mlogin', component: ManagerloginComponent },
+      { path: 'invoice', component: InvoiceComponent },
     ]
   },
   { path: '**', redirectTo: 'dashboard' }

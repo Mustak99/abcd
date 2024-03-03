@@ -13,6 +13,7 @@ export class DashboardComponent {
   item: any;
   data$!: Observable<any>;
   userId: any;
+  managerId:any;
   machineDataArray: any[] = [];
 
   constructor(
@@ -26,13 +27,15 @@ export class DashboardComponent {
     // this.dataRetrive.fetchMachineData().then(() => {
     //   this.machineDataArray = this.dataRetrive.machineDataArray;
     // });
-    this.fetchMachines(this.userId);
+    this.managerId=sessionStorage.getItem('manager_id');
+
+    this.fetchMachines(this.managerId? this.managerId:this.userId);
   }
 
   async fetchMachines(userId: string) {
     try {
       const snapshot = await this.firestore
-        .collection('machines', (ref) => ref.where('master_id', '==', userId))
+        .collection('machines', (ref) => ref.where(this.managerId ?'manager_id':'master_id', '==', userId))
         .get()
         .toPromise();
       if (snapshot) {

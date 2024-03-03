@@ -1,0 +1,26 @@
+@media print {
+  body {
+    zoom: 70%;
+  }
+
+  tr.page-break {
+    page-break-before: always;
+    page-break-inside: avoid;
+  }
+
+  th.page-break {
+    page-break-before: always;
+    page-break-inside: avoid;
+  }
+
+  td.page-break {
+    page-break-before: always;
+    page-break-inside: avoid;
+  }
+}
+p{
+  color:black;
+}
+tr ,td ,table,th{
+  border-color: black;
+}
