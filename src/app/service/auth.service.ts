@@ -78,7 +78,7 @@ export class AuthService {
         });
         setTimeout(() => {
           this.router.navigate(['dashboard']);
-        }, 2000);
+        }, 1000);
     } catch (err: any) {
       if (err.code) {
         if (err.code == 'auth/user-not-found') {

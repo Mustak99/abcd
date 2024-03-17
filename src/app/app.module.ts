@@ -12,10 +12,12 @@ import { DashboardComponent } from './component/dashboard/dashboard.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MachineFormComponent } from'./commoncomponent/addmachine';
 import { Machinecard } from'./commoncomponent/machine-card';
+import { InvoiceFormComponent } from'./commoncomponent/inv';
 import { CommonModule } from '@angular/common';
 import { ManagerFormComponent } from './commoncomponent/addManager';
 import { ManagerloginComponent } from './component/managerlogin/managerlogin.component';
 import { CommonlayoutComponent } from './component/commonlayout/commonlayout.component';
+import { InvoiceComponent } from './component/invoice/invoice.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +29,9 @@ import { CommonlayoutComponent } from './component/commonlayout/commonlayout.com
     Machinecard,
     ManagerFormComponent,
     ManagerloginComponent,
-    CommonlayoutComponent
+    CommonlayoutComponent,
+    InvoiceFormComponent,
+    InvoiceComponent
   ],
   imports: [
     CommonModule,

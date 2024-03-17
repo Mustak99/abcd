@@ -12,6 +12,7 @@ import { InvoiceComponent } from './component/invoice/invoice.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
   { path: '', redirectTo: 'login', pathMatch: 'full' }, // Redirect empty path to login
   {
     path: '',
@@ -19,7 +20,6 @@ const routes: Routes = [
     canActivate: [AuthGuard], // Apply AuthGuard to the parent route
     children: [
       { path: 'dashboard', component: DashboardComponent },
-      { path: 'register', component: RegisterComponent },
       { path: 'addmachin', component: MachineFormComponent, canActivate: [AuthGuard] }, // Apply AuthGuard to child routes
       { path: 'manager', component: ManagerFormComponent, canActivate: [AuthGuard] }, // Apply AuthGuard to child routes
       { path: 'mlogin', component: ManagerloginComponent },

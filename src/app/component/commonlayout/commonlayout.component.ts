@@ -1,9 +1,5 @@
 import { Component } from '@angular/core';
 import { AuthService } from 'src/app/service/auth.service';
-import { DataretriveService } from 'src/app/service/dataretrive.service';
-import { Observable } from 'rxjs';
-import { Firestore } from '@angular/fire/firestore';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
 @Component({
   selector: 'app-commonlayout',
   templateUrl: './commonlayout.component.html',
