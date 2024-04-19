@@ -2,13 +2,27 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { AuthService } from 'src/app/service/auth.service';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Observable } from 'rxjs';
-import { DocumentSnapshot } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-machine-form',
   template: `
-    <div class="card" style="width: 70%;margin: auto;margin-top:20px;">
+    <div style="border-bottom: #978da8 solid 1px; display: flex">
+      <p
+        class="mb-0 pr-1 cursor"
+        (click)="onof(true)"
+        [ngStyle]="{ color: toggle ? 'black' : '#978da8' }"
+      >
+      Add Machine
+      </p>
+      <p
+        class="pl-1 mb-0 cursor"
+        (click)="onof(false)"
+        [ngStyle]="{ color: !toggle ? 'black' : '#978da8' }"
+      >
+      Update Machine
+      </p>
+    </div>
+    <div class="card" style="width: 70%;margin: auto;margin-top:20px;" *ngIf="toggle">
       <div class="card-body">
         <h2>Add Machine</h2>
         <form [formGroup]="machineForm" (ngSubmit)="onSubmit()">
@@ -226,6 +240,37 @@ import { DocumentSnapshot } from '@angular/fire/firestore';
         </form>
       </div>
     </div>
+
+    <!-- Table to display existing machines -->
+    <div class="card" style="width: 70%; margin: auto; margin-top: 20px;" *ngIf="!toggle">
+      <div class="card-body">
+        <h2>Update Machine Status</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Machine Number</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let machine of machineDataArray">
+              <td>{{ machine.data.mNo }}</td>
+              <td>
+                <select
+                  class="form-control"
+                  [(ngModel)]="machine.data.status"
+                  (change)="updateStatus(machine)"
+                >
+                  <option value="running">Running</option>
+                  <option value="stop">Stop</option>
+                  <option value="idle">Idle</option>
+                </select>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   `,
   styles: [``],
 })
@@ -234,6 +279,8 @@ export class MachineFormComponent {
   machineForm!: FormGroup;
   manager_id: any;
   master_id!: any;
+  toggle = true;
+
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -244,6 +291,10 @@ export class MachineFormComponent {
   ngOnInit() {
     this.manager_id = sessionStorage.getItem('manager_id');
     this.getMasterId(this.manager_id);
+    this.fetchMachines(this.manager_id);
+  }
+  onof(parametr: boolean) {
+    this.toggle = parametr;
   }
 
   async getMasterId(managerId: any) {
@@ -330,6 +381,50 @@ export class MachineFormComponent {
             console.error('Error adding data:', error);
           });
       }
+    }
+  }
+
+  machineDataArray: any[] = [];
+  async fetchMachines(userId: string) {
+    try {
+      let query = this.firestore.collection('machines', (ref) =>
+        ref.where(this.manager_id ? 'manager_id' : 'master_id', '==', userId)
+      );
+
+      const snapshot = await query.get().toPromise();
+
+      if (snapshot && !snapshot.empty) {
+        this.machineDataArray = snapshot.docs.map((doc) => {
+          const data = doc.data();
+          const id = doc.id; // Get the document ID
+          if (typeof data === 'object' && data !== null) {
+            return { id, ...data };
+          } else {
+            console.error('Document data is not an object:', data);
+            return { id };
+          }
+        });
+      } else {
+        this.machineDataArray = [];
+      }
+    } catch (error) {
+      console.error('Error fetching machines:', error);
+      this.machineDataArray = [];
+    }
+  }
+
+  async updateStatus(machine: any) {
+    try {
+      console.log('Updating status for machine with ID:', machine.id);
+      console.log('New status:', machine.data.status);
+      await this.firestore
+        .collection('machines')
+        .doc(machine.id)
+        .update({ 'data.status': machine.data.status });
+      console.log('Status updated successfully');
+      alert('Status updated successfully');
+    } catch (error) {
+      console.error('Error updating status:', error);
     }
   }
 }

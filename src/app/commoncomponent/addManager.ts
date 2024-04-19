@@ -39,7 +39,32 @@ import { AuthService } from 'src/app/service/auth.service';
               class="form-control"
               required
             />
-            <div class="invalid-feedback">Manager Name is required.</div>
+            <div
+              *ngIf="
+                managerForm.get('managerName')?.invalid &&
+                managerForm.get('managerName')?.touched
+              "
+              class="error"
+            >
+              <div
+                *ngIf="
+                  managerForm
+                    .get('managerName')
+                    ?.errors?.hasOwnProperty('required')
+                "
+              >
+                Manager Name is required.
+              </div>
+              <div
+                *ngIf="
+                  managerForm
+                    .get('managerName')
+                    ?.errors?.hasOwnProperty('pattern')
+                "
+              >
+                Invalid name format.
+              </div>
+            </div>
           </div>
 
           <div class="form-group">
@@ -51,8 +76,31 @@ import { AuthService } from 'src/app/service/auth.service';
               class="form-control"
               required
             />
-            <div class="invalid-feedback">
-              Please enter a valid email address.
+            <div
+              *ngIf="
+                managerForm.get('managerEmail')?.invalid &&
+                managerForm.get('managerEmail')?.touched
+              "
+              class="error"
+            >
+              <div
+                *ngIf="
+                  managerForm
+                    .get('managerEmail')
+                    ?.errors?.hasOwnProperty('required')
+                "
+              >
+                Email is required.
+              </div>
+              <div
+                *ngIf="
+                  managerForm
+                    .get('managerEmail')
+                    ?.errors?.hasOwnProperty('email')
+                "
+              >
+                Please enter a valid email address.
+              </div>
             </div>
           </div>
 
@@ -65,40 +113,74 @@ import { AuthService } from 'src/app/service/auth.service';
               class="form-control"
               required
             />
-            <div class="invalid-feedback">Password is required.</div>
+            <div
+              *ngIf="
+                managerForm.get('managerPassword')?.invalid &&
+                managerForm.get('managerPassword')?.touched
+              "
+              class="error"
+            >
+              <div
+                *ngIf="
+                  managerForm
+                    .get('managerPassword')
+                    ?.errors?.hasOwnProperty('required')
+                "
+              >
+                Password is required.
+              </div>
+              <div
+                *ngIf="
+                  managerForm
+                    .get('managerPassword')
+                    ?.errors?.hasOwnProperty('minlength')
+                "
+              >
+                Password must be at least 6 characters long.
+              </div>
+              <div
+                *ngIf="
+                  managerForm
+                    .get('managerPassword')
+                    ?.errors?.hasOwnProperty('pattern')
+                "
+              >
+                Password must contain at least one uppercase letter, one
+                lowercase letter, one number, and one special character.
+              </div>
+            </div>
           </div>
 
-          <button
-            type="submit"
-            class="btn btn-primary"
-            [disabled]="managerForm.invalid"
-          >
-            Enroll Manager
-          </button>
+          <button type="submit" class="btn btn-primary">Enroll Manager</button>
         </form>
       </div>
     </div>
     <div class="container-fluid mx-auto mt-3" *ngIf="!toggle">
-  <div class="card p-2">
-    <h2 class="mb-4">Manager Information</h2>
-    <div class="row">
-      <div class="col-md-4" *ngFor="let manager of managerData">
-        <div class="card manager-card">
-          <div class="card-body">
-            <h5 class="card-title" style="border-bottom:solid 1px">{{ manager.name }}</h5>
-            <p class="card-text">Email: {{ manager.email }}</p>
+      <div class="card p-2">
+        <h2 class="mb-4">Manager Information</h2>
+        <div class="row">
+          <div class="col-md-4" *ngFor="let manager of managerData">
+            <div class="card manager-card">
+              <div class="card-body">
+                <h5 class="card-title" style="border-bottom:solid 1px">
+                  {{ manager.name }}
+                </h5>
+                <p class="card-text">Email: {{ manager.email }}</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
-
   `,
   styles: [
     `
       .manager-card {
         margin-bottom: 20px;
+      }
+      .error{
+        color:red;
+        font-size:10px;
       }
     `,
   ],
@@ -115,9 +197,21 @@ export class ManagerFormComponent {
     private authservice: AuthService
   ) {
     this.managerForm = this.fb.group({
-      managerName: ['', Validators.required],
+      managerName: [
+        '',
+        [Validators.required, Validators.pattern('^[a-zA-Z ]*$')],
+      ],
       managerEmail: ['', [Validators.required, Validators.email]],
-      managerPassword: ['', [Validators.required, Validators.minLength(6)]], // Adjust minimum password length as per your requirements
+      managerPassword: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(6),
+          Validators.pattern(
+            '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,}$'
+          ),
+        ],
+      ],
     });
   }
 
@@ -154,8 +248,8 @@ export class ManagerFormComponent {
                 .collection('managers')
                 .doc(user.uid)
                 .set(managerData);
-                this.managerForm.reset();
-                alert('Data added successfully')
+              this.managerForm.reset();
+              alert('Data added successfully');
             } catch (error) {
               console.error('Error enrolling manager: ', error);
             }
@@ -175,8 +269,9 @@ export class ManagerFormComponent {
         .collection('managers', (ref) => ref.where('master_id', '==', masterId))
         .get()
         .toPromise();
-        
-      if (snapshot && !snapshot.empty) { // Check if snapshot exists and is not empty
+
+      if (snapshot && !snapshot.empty) {
+        // Check if snapshot exists and is not empty
         const data = snapshot.docs.map((doc: any) => doc.data());
         this.managerData = data;
         console.log(this.managerData);
@@ -188,5 +283,4 @@ export class ManagerFormComponent {
       this.managerData = [];
     }
   }
-  
 }
