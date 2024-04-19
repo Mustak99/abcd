@@ -18,9 +18,41 @@
     page-break-inside: avoid;
   }
 }
-p{
-  color:black;
+
+p {
+  color: black;
 }
-tr ,td ,table,th{
-  border-color: black;
+
+thead,
+th {
+  background-color: #deddec;
+  border-color: #e6ecf5;
+  
+}
+
+td {
+  border-color: #e6ecf5;
+}
+
+/* Style for scrollbar */
+::-webkit-scrollbar {
+  width: 8px; /* width of the scrollbar */
+  border-radius: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px; /* color of the track */
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px; /* color of the handle */
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* color of the handle on hover */
 }

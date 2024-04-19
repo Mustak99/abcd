@@ -54,7 +54,13 @@ export class InvoiceComponent {
     }
 
     this.manager_id = sessionStorage.getItem('manager_id');
-    this.getMasterId(this.manager_id);
+    if(this.manager_id==null){
+      this.master_id=sessionStorage.getItem('user_id')
+      this.toggle=false;
+      this.fetchInvoices(this.master_id)
+    }else{
+      this.getMasterId(this.manager_id);
+    }
 
     this.invoiceForm = this.fb.group({
       vendorName: ['', Validators.required],
@@ -62,7 +68,7 @@ export class InvoiceComponent {
       unitPrice: ['', Validators.required],
       description: ['', Validators.required],
     });
-    // this.fetchInvoices(this.manager_id);
+
   }
 
   onof(parametr: boolean) {
@@ -88,18 +94,26 @@ export class InvoiceComponent {
     }
   }
 
+
   async fetchInvoices(userId: string) {
     try {
-      const snapshot = await this.firestore
-        .collection('invoices', (ref) =>
-          ref.where(this.manager_id ? 'manager_id' : 'master_id', '==', userId)
-        )
-        .get()
-        .toPromise();
-      if (snapshot) {
-        const data = snapshot.docs.map((doc: any) => (doc.data() as any).data);
-        this.invoices = data;
-        console.error('data', data);
+      let query = this.firestore.collection('invoices', (ref) =>
+        ref.where(this.manager_id ? 'manager_id' : 'master_id', '==', userId)
+      );
+
+      const snapshot = await query.get().toPromise();
+
+      if (snapshot && !snapshot.empty) {
+        this.invoices = snapshot.docs.map((doc) => {
+          const data = doc.data();
+          const id = doc.id; // Get the document ID
+          if (typeof data === 'object' && data !== null) {
+            return { id, ...data };
+          } else {
+            console.error('Document data is not an object:', data);
+            return { id };
+          }
+        });
       } else {
         this.invoices = [];
       }
@@ -108,6 +122,7 @@ export class InvoiceComponent {
       this.invoices = [];
     }
   }
+
   onDataAdded(event: any) {
     console.log('Data added in dashboard:', event);
   }
@@ -274,5 +289,25 @@ export class InvoiceComponent {
 
   addProduct() {
     this.invoice.products.push(new Product());
+  }
+  deleteProduct(index: number) {
+    this.invoice.products.splice(index, 1);
+  }
+  
+  async deleteInvoce(invoice: any){
+    try {
+      const confirmed = confirm("Are you sure you want to delete this Invoice?");
+      if (confirmed) {
+        await this.firestore.collection('invoices').doc(invoice.id).delete();
+        this.invoices = [];
+        this.fetchInvoices(this.manager_id ? this.manager_id:this.master_id);
+        alert("Invoice deleted successfully!");
+      } else {
+        alert("Deletion canceled.");
+      }
+    } catch (error) {
+      console.log('Error deleting Invoice:' + error);
+      alert("An error occurred while deleting the Invoice.");
+    }
   }
 }

@@ -12,17 +12,21 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
         (click)="onof(true)"
         [ngStyle]="{ color: toggle ? 'black' : '#978da8' }"
       >
-      Add Machine
+        Add Machine
       </p>
       <p
         class="pl-1 mb-0 cursor"
         (click)="onof(false)"
         [ngStyle]="{ color: !toggle ? 'black' : '#978da8' }"
       >
-      Update Machine
+        Update Machine
       </p>
     </div>
-    <div class="card" style="width: 70%;margin: auto;margin-top:20px;" *ngIf="toggle">
+    <div
+      class="card"
+      style="width: 70%;margin: auto;margin-top:20px;"
+      *ngIf="toggle"
+    >
       <div class="card-body">
         <h2>Add Machine</h2>
         <form [formGroup]="machineForm" (ngSubmit)="onSubmit()">
@@ -242,7 +246,11 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
     </div>
 
     <!-- Table to display existing machines -->
-    <div class="card" style="width: 70%; margin: auto; margin-top: 20px;" *ngIf="!toggle">
+    <div
+      class="card"
+      style="width: 70%; margin: auto; margin-top: 20px;"
+      *ngIf="!toggle"
+    >
       <div class="card-body">
         <h2>Update Machine Status</h2>
         <table class="table">
@@ -250,6 +258,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
             <tr>
               <th>Machine Number</th>
               <th>Status</th>
+              <th class="d-flex justify-content-center">Delete</th>
             </tr>
           </thead>
           <tbody>
@@ -265,6 +274,14 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
                   <option value="stop">Stop</option>
                   <option value="idle">Idle</option>
                 </select>
+              </td>
+              <td class="d-flex justify-content-center">
+                <button
+                  class="btn btn-danger"
+                  (click)="deleteMachine(machine)"
+                >
+                  Delete
+                </button>
               </td>
             </tr>
           </tbody>
@@ -292,6 +309,9 @@ export class MachineFormComponent {
     this.manager_id = sessionStorage.getItem('manager_id');
     this.getMasterId(this.manager_id);
     this.fetchMachines(this.manager_id);
+  }
+  ngOnChange(){
+
   }
   onof(parametr: boolean) {
     this.toggle = parametr;
@@ -412,11 +432,25 @@ export class MachineFormComponent {
       this.machineDataArray = [];
     }
   }
-
+  async deleteMachine(machine: any) {
+    try {
+      const confirmed = confirm("Are you sure you want to delete this machine?");
+      if (confirmed) {
+        await this.firestore.collection('machines').doc(machine.id).delete();
+        this.machineDataArray=[];
+        this.fetchMachines(this.manager_id);
+        alert("Machine deleted successfully!");
+      } else {
+        alert("Deletion canceled.");
+      }
+    } catch (error) {
+      console.log('Error deleting machine:' + error);
+      alert("An error occurred while deleting the machine.");
+    }
+  }
+  
   async updateStatus(machine: any) {
     try {
-      console.log('Updating status for machine with ID:', machine.id);
-      console.log('New status:', machine.data.status);
       await this.firestore
         .collection('machines')
         .doc(machine.id)

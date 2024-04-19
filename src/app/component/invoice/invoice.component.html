@@ -1,5 +1,5 @@
 <div style="border-bottom: #978da8 solid 1px; display: flex">
-  <p
+  <p  *ngIf="manager_id"
     class="mb-0 pr-1 cursor"
     (click)="onof(true)"
     [ngStyle]="{ color: toggle ? 'black' : '#978da8' }"
@@ -8,7 +8,7 @@
   </p>
   <p
     class="pl-1 mb-0 cursor"
-    (click)="onof(false);fetchInvoices(manager_id)"
+    (click)="onof(false);fetchInvoices(manager_id ? manager_id : master_id)"
     [ngStyle]="{ color: !toggle ? 'black' : '#978da8' }"
   >
     View invoice
@@ -158,6 +158,11 @@
                       <td>
                         {{ product.price * product.qty || "" }}
                       </td>
+                      <td *ngIf="i > 0">
+                        <button type="button" class="btn btn-danger" (click)="deleteProduct(i)">
+                          Delete
+                        </button>
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -186,31 +191,42 @@
     
   </form>
 </div>
-<div class="container mt-5" *ngIf="!toggle">
-  <table class="table table-striped table-bordered">
-    <thead class="thead-dark">
+<div class="container mt-5   card"  *ngIf="!toggle">
+  <h1>Invoices</h1>
+  <div style="height: 300px; overflow-y: scroll;">
+  <table class="table  table-bordered" >
+    <thead  style="position: sticky; top: 0;">
       <tr>
         <th>SrNo</th>
         <th>Customer Name</th>
         <th>Contact Number</th>
         <th>Bill Number</th>
-        <th>View</th>
+        <th style=" text-align: center;">View</th>
+        <th style=" text-align: center;">Delete</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let invoice of invoices; let i = index">
         <td>{{ i + 1 }}</td>
-        <td>{{ invoice.customerName }}</td>
-        <td>{{ invoice.contactNo }}</td>
-        <td >{{ invoice.billNumber }}</td>
-        <td >
+        <td>{{ invoice.data.customerName }}</td>
+        <td>{{ invoice.data.contactNo }}</td>
+        <td >{{ invoice.data.billNumber }}</td>
+        <td style=" text-align: center;" >
           <i
             class="fa fa-file"
             style="cursor: pointer"
-            (click)="viewInvoice(invoice)"
+            (click)="viewInvoice(invoice.data)"
           ></i>
+        </td>
+        <td style=" text-align: center;">
+        <i
+        class="fa fa-trash"
+        style="cursor: pointer;color:red"
+        (click)="deleteInvoce(invoice)"
+      ></i>
         </td>
       </tr>
     </tbody>
   </table>
+  </div>
 </div>
