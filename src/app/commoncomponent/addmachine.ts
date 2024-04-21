@@ -256,13 +256,15 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
         <table class="table">
           <thead>
             <tr>
+              <th>srNo.</th>
               <th>Machine Number</th>
               <th>Status</th>
               <th class="d-flex justify-content-center">Delete</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let machine of machineDataArray">
+            <tr *ngFor="let machine of machineDataArray ; let i =index;" >
+              <td>{{ i + 1 }}</td>
               <td>{{ machine.data.mNo }}</td>
               <td>
                 <select
@@ -272,7 +274,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
                 >
                   <option value="running">Running</option>
                   <option value="stop">Stop</option>
-                  <option value="idle">Idle</option>
+                  <option value="ideal">Ideal</option>
                 </select>
               </td>
               <td class="d-flex justify-content-center">
